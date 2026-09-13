@@ -1,18 +1,23 @@
 # OncStat - Public Health Cancer Data Insights Dashboard
 
-**Version 1.0 | 2025**
+[![Live Demo](https://img.shields.io/badge/Live_Demo-oncstat.onrender.com-00C7B7?style=for-the-badge&logo=render&logoColor=white)](https://oncstat.onrender.com/)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.x-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Tests](https://img.shields.io/badge/Tests-91%20Passing-success?style=for-the-badge&logo=pytest&logoColor=white)](https://github.com/ayqon/OncStat)
 
-A Flask-based dashboard for analysing UK Cancer Registration data with focus on Sarcoma (ICD-10 C49, C40-C41).
+> 🌐 **Live Web Application:** [https://oncstat.onrender.com/](https://oncstat.onrender.com/)
+
+A full-stack epidemiology and data analytics dashboard for analysing UK Cancer Registration data with clinical focus on **Sarcomas** (ICD-10 `C49`, `C40-C41`).
 
 ## Features
 
-- 📊 **Dashboard** - Card-based statistics overview
-- 📥 **Import Data** - Download from NHS or upload custom files (CSV/Excel/JSON)
-- 🔍 **Filter & Explore** - Search by ICD-10, Year, Age, Gender
-- 📈 **Charts** - Matplotlib visualizations (trends, age distribution)
-- 📝 **CRUD** - Create, Read, Update, Delete records
-- 💾 **Export** - Download filtered data as CSV
-- 📜 **Activity Logs** - View all user actions
+- 📊 **Dashboard** - Real-time statistics overview and summary cards
+- 📥 **Import Data** - Automated ingestion from NHS Digital, US CDC (`BYSITE.TXT`), or custom CSV/Excel/JSON
+- 🔍 **Filter & Explore** - Multi-criteria clinical search by ICD-10, diagnosis year, age, and sex
+- 📈 **Interactive Charts** - Plotly-powered dynamic visualizations (incidence trends, top cancer sites, demographic breakdowns)
+- 📝 **CRUD Operations** - Paginated Create, Read, Update, and Delete records with automatic sarcoma tagging
+- 💾 **Multi-Format Export** - Download filtered subsets in CSV, Excel (`.xlsx`), JSON, or TXT
+- 📜 **Activity Logs** - Live audit trail tracking all user operations
 
 ## Quick Start
 
@@ -53,17 +58,19 @@ NHS Digital Cancer Registrations 2023
 https://files.digital.nhs.uk/16/5B8561/Cancer_registrations_2023_machine_readable_files.zip
 
 ## Technology Stack
+ 
+- **Backend**: Python 3.10+, Flask, Gunicorn
+- **Database**: SQLite3
+- **Data Engineering / ETL**: pandas, NumPy, openpyxl
+- **Visualizations**: Plotly (interactive), Matplotlib
+- **Testing & QA**: pytest (91 unit & integration tests)
+- **Deployment**: Render / Docker / Procfile-ready
 
-- **Backend**: Python 3.10+, Flask
-- **Database**: SQLite
-- **Data Processing**: pandas
-- **Charts**: Matplotlib
-- **Testing**: pytest
+## Author
 
-## License
-
-For educational purposes.
+Created by [@ayqon](https://github.com/ayqon).
 
 ---
 
 **OncStat v1.0** © 2025
+
