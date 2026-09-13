@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Export Data</h2>
+    <p>Download filtered cancer data in your preferred format</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Export Options</h3>
+    </div>
+
+    <form method="POST" action="/export">
+        <!-- Format Selection -->
+        <div style="margin-bottom: 24px;">
+            <label class="form-label" style="margin-bottom: 12px; display: block;">Select Export Format</label>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+                <label
+                    style="display: flex; align-items: center; padding: 16px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                    <input type="radio" name="format" value="csv" checked style="margin-right: 10px;">
+                    <div>
+                        <strong>CSV</strong>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Comma-separated values</div>
+                    </div>
+                </label>
+                <label
+                    style="display: flex; align-items: center; padding: 16px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                    <input type="radio" name="format" value="xlsx" style="margin-right: 10px;">
+                    <div>
+                        <strong>Excel (XLSX)</strong>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Microsoft Excel format</div>
+                    </div>
+                </label>
+                <label
+                    style="display: flex; align-items: center; padding: 16px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                    <input type="radio" name="format" value="json" style="margin-right: 10px;">
+                    <div>
+                        <strong>JSON</strong>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">JavaScript Object Notation</div>
+                    </div>
+                </label>
+                <label
+                    style="display: flex; align-items: center; padding: 16px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                    <input type="radio" name="format" value="txt" style="margin-right: 10px;">
+                    <div>
+                        <strong>Text (TXT)</strong>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Plain text table</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Optional Filters -->
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 24px; margin-top: 24px;">
+            <h4 style="margin-bottom: 16px;">Filter Data (Optional)</h4>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px;">
+                Leave blank to export all data, or apply filters to export a subset.
+            </p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Search ICD-10 / Site</label>
+                    <input type="text" name="icd10" class="form-control" placeholder="e.g. Lung, Breast">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Cancer Type</label>
+                    <select name="cancer_type" class="form-control">
+                        <option value="">All Cancer Types</option>
+                        {% if cancer_types %}
+                        {% for ct in cancer_types %}
+                        <option value="{{ ct }}">{{ ct }}</option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Gender</label>
+                    <select name="gender" class="form-control">
+                        <option value="">All Genders</option>
+                        {% if genders %}
+                        {% for g in genders %}
+                        <option value="{{ g }}">{{ g }}</option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Year</label>
+                    <select name="year" class="form-control">
+                        <option value="">All Years</option>
+                        {% if years %}
+                        {% for y in years %}
+                        <option value="{{ y }}">{{ y }}</option>
+                        {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Button -->
+        <div style="margin-top: 24px; display: flex; gap: 12px;">
+            <button type="submit" class="btn btn-primary">Download Export</button>
+            <a href="/filter" class="btn btn-secondary">Back to Filter</a>
+        </div>
+    </form>
+</div>
+
+<!-- Format Info -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Format Information</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+        <div>
+            <strong>CSV</strong>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px;">
+                Universal format compatible with Excel, Google Sheets, R, Python, and most data tools.
+            </p>
+        </div>
+        <div>
+            <strong>Excel (XLSX)</strong>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px;">
+                Native Microsoft Excel format with formatting support. Best for Excel users.
+            </p>
+        </div>
+        <div>
+            <strong>JSON</strong>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px;">
+                Structured data format ideal for web applications and programming.
+            </p>
+        </div>
+        <div>
+            <strong>Text (TXT)</strong>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px;">
+                Simple plain text table format for quick viewing or printing.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<style>
+    input[type="radio"]:checked+div strong {
+        color: var(--sidebar-bg);
+    }
+
+    label:has(input[type="radio"]:checked) {
+        border-color: var(--sidebar-bg) !important;
+        background: rgba(13, 79, 79, 0.05);
+    }
+</style>

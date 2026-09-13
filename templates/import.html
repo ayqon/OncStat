@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Import Data</h2>
+    <p>Load cancer registry data from local sources or upload your own files</p>
+</div>
+
+{% if status %}
+<div class="success-box">
+    <strong>Success!</strong> {{ status }}
+</div>
+{% endif %}
+
+{% if error %}
+<div class="error-box">
+    <strong>Error:</strong> {{ error }}
+</div>
+{% endif %}
+
+<!-- Current Status -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Database Status</h3>
+    </div>
+    <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
+        <div>
+            <span style="font-size: 2rem; font-weight: bold; color: var(--sidebar-bg);">{{ "{:,}".format(current_count
+                or 0) }}</span>
+            <span style="color: var(--text-secondary);"> records loaded</span>
+        </div>
+        {% if current_dataset %}
+        <div style="padding: 8px 16px; background: var(--sidebar-bg); color: white; border-radius: 20px;">
+            Active: {{ current_dataset }}
+        </div>
+        {% else %}
+        <div style="padding: 8px 16px; background: #f1f5f9; color: var(--text-secondary); border-radius: 20px;">
+            No dataset loaded
+        </div>
+        {% endif %}
+
+        {% if current_count > 0 %}
+        <form method="POST" style="margin-left: auto;">
+            <input type="hidden" name="action" value="reset">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Delete all data?');">Reset
+                Data</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Load - Local Datasets -->
+<div class="card" style="border: 2px solid var(--sidebar-bg);">
+    <div class="card-header">
+        <h3 class="card-title">Quick Load - Pre-installed Datasets</h3>
+    </div>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
+        Load data instantly from datasets included with OncStat.
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+        <!-- CDC USCS -->
+        <div style="border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; background: #f8fafc;">
+            <h4 style="margin-bottom: 8px; color: var(--sidebar-bg);">US CDC USCS (1999-2022)</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                ~65,000 records • Cancer incidence & mortality • All US states
+            </p>
+            <form method="POST">
+                <input type="hidden" name="action" value="load_local_cdc">
+                <button type="submit" class="btn btn-primary" style="width: 100%;" {% if not cdc_available %}disabled
+                    title="BYSITE.TXT not found" {% endif %}
+                    onclick="return confirm('This will replace all existing data. Continue?');">
+                    {% if cdc_available %}Load CDC Data{% else %}CDC Data Not Available{% endif %}
+                </button>
+            </form>
+        </div>
+
+        <!-- NHS Digital -->
+        <div style="border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; background: #f8fafc;">
+            <h4 style="margin-bottom: 8px; color: #1e40af;">UK NHS Digital (2023)</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">
+                ~340 records • Cancer registrations England • ICD-10 codes
+            </p>
+            <form method="POST">
+                <input type="hidden" name="action" value="load_local_nhs">
+                <button type="submit" class="btn btn-primary" style="width: 100%; background: #1e40af;" {% if not
+                    nhs_available %}disabled title="NHS CSV not found" {% endif %}
+                    onclick="return confirm('This will replace all existing data. Continue?');">
+                    {% if nhs_available %}Load NHS Data{% else %}NHS Data Not Available{% endif %}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Custom Files -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Upload Custom Files</h3>
+    </div>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
+        Upload your own data files. This will replace any existing data.
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+        <!-- CDC Upload -->
+        <div style="border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px;">
+            <h4 style="margin-bottom: 8px;">Upload CDC BYSITE.TXT</h4>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">
+                Download from: <a href="https://www.cdc.gov/cancer/uscs/USCS-1999-2022-ASCII.zip" target="_blank">CDC
+                    USCS ZIP</a><br>
+                Extract and upload BYSITE.TXT
+            </p>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="upload_cdc">
+                <input type="file" name="file" accept=".txt" class="form-control" required style="margin-bottom: 8px;">
+                <button type="submit" class="btn btn-secondary" style="width: 100%;">Upload TXT</button>
+            </form>
+        </div>
+
+        <!-- NHS Upload -->
+        <div style="border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px;">
+            <h4 style="margin-bottom: 8px;">Upload NHS CSV</h4>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">
+                Download from: <a
+                    href="https://files.digital.nhs.uk/16/5B8561/Cancer_registrations_2023_machine_readable_files.zip"
+                    target="_blank">NHS Digital ZIP</a><br>
+                Extract and upload the CSV file
+            </p>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="upload_nhs">
+                <input type="file" name="file" accept=".csv" class="form-control" required style="margin-bottom: 8px;">
+                <button type="submit" class="btn btn-secondary" style="width: 100%;">Upload CSV</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

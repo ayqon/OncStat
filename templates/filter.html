@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Filter & Explore</h2>
+    <p>Search and filter cancer registration data by various criteria</p>
+</div>
+
+<!-- Filter Form -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Filter Options</h3>
+    </div>
+    <form method="POST">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">ICD-10 / Site (Search)</label>
+                <input type="text" name="icd10" class="form-control" value="{{ filters.get('icd10', '') }}"
+                    placeholder="e.g. C49, Lung, Breast">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Cancer Type</label>
+                <select name="cancer_type" class="form-control">
+                    <option value="">All Cancer Types</option>
+                    {% for ct in cancer_types %}
+                    <option value="{{ ct }}" {% if filters.get('cancer_type')==ct %}selected{% endif %}>{{ ct }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Gender</label>
+                <select name="gender" class="form-control">
+                    <option value="">All Genders</option>
+                    {% for g in genders %}
+                    <option value="{{ g }}" {% if filters.get('gender')==g %}selected{% endif %}>{{ g }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Year</label>
+                <select name="year" class="form-control">
+                    <option value="">All Years</option>
+                    {% for y in years %}
+                    <option value="{{ y }}" {% if filters.get('year')==y|string %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Age Group</label>
+                <select name="age_group" class="form-control">
+                    <option value="">All Ages</option>
+                    {% for a in age_groups %}
+                    <option value="{{ a }}" {% if filters.get('age_group')==a %}selected{% endif %}>{{ a }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 20px; margin-top: 16px;">
+            <label class="form-check">
+                <input type="checkbox" name="sarcoma_only" value="1" {% if filters.get('sarcoma_only') %}checked{% endif
+                    %}>
+                <span><strong>Sarcoma Focus Only</strong> (C49, C40-C41)</span>
+            </label>
+
+            <div style="flex: 1;"></div>
+
+            <a href="/filter" class="btn btn-secondary">Reset</a>
+            <button type="submit" class="btn btn-primary">🔍 Apply Filters</button>
+        </div>
+    </form>
+</div>
+
+{% if results %}
+<!-- Results Header -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Results ({{ results|length }}{% if results|length == 500 %}+{% endif %} records)</h3>
+        <a href="/export?icd10={{ filters.get('icd10', '') }}&gender={{ filters.get('gender', '') }}&year={{ filters.get('year', '') }}&age_group={{ filters.get('age_group', '') }}&sarcoma_only={{ filters.get('sarcoma_only', '') }}"
+            class="btn btn-secondary" target="_blank">📥 Download CSV</a>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ICD-10</th>
+                    <th>Year</th>
+                    <th>Gender</th>
+                    <th>Age Group</th>
+                    <th>Count</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    <td><strong>{{ row['icd10_code'] }}</strong></td>
+                    <td>{{ row['diagnosis_year'] }}</td>
+                    <td>{{ row['gender'] }}</td>
+                    <td>{{ row['age_group'] }}</td>
+                    <td>{{ row['count'] }}</td>
+                    <td>
+                        {% if row['is_sarcoma'] %}
+                        <span class="badge badge-sarcoma">Sarcoma</span>
+                        {% else %}
+                        <span class="badge badge-other">Other</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% elif request.method == 'POST' %}
+<div class="card">
+    <p style="text-align: center; color: var(--text-secondary); padding: 40px;">
+        No results found matching your criteria. Try adjusting your filters.
+    </p>
+</div>
+{% endif %}
+{% endblock %}

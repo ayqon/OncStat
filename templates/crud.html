@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Manage Records</h2>
+    <p>View, add, edit, or delete cancer registration records</p>
+</div>
+
+<!-- Add New Record -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Add New Record</h3>
+    </div>
+    <form method="POST">
+        <input type="hidden" name="action" value="create">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Cancer Type / ICD-10</label>
+                <input type="text" name="icd10" class="form-control" placeholder="e.g. Lung, C49.0" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Year</label>
+                <input type="number" name="year" class="form-control" placeholder="2023" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Gender</label>
+                <input type="text" name="gender" class="form-control" placeholder="Male/Female" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Age Group</label>
+                <input type="text" name="age" class="form-control" placeholder="e.g. 50-54, All ages" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Count</label>
+                <input type="number" name="count" class="form-control" placeholder="0" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Add Record</button>
+    </form>
+</div>
+
+<!-- Records Table -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">All Records</h3>
+        <span style="color: var(--text-secondary); font-size: 0.85rem;">
+            Showing {{ (page - 1) * per_page + 1 }}-{{ [(page * per_page), total_records] | min }} of {{
+            "{:,}".format(total_records) }} records
+        </span>
+    </div>
+
+    <!-- Pagination Top -->
+    {% if total_pages > 1 %}
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
+        {% if page > 1 %}
+        <a href="/crud?page=1" class="btn btn-secondary" style="padding: 6px 12px;">First</a>
+        <a href="/crud?page={{ page - 1 }}" class="btn btn-secondary" style="padding: 6px 12px;">Previous</a>
+        {% endif %}
+
+        <span style="padding: 6px 16px; background: var(--sidebar-bg); color: white; border-radius: 6px;">
+            Page {{ page }} of {{ total_pages }}
+        </span>
+
+        {% if page < total_pages %} <a href="/crud?page={{ page + 1 }}" class="btn btn-secondary"
+            style="padding: 6px 12px;">Next</a>
+            <a href="/crud?page={{ total_pages }}" class="btn btn-secondary" style="padding: 6px 12px;">Last</a>
+            {% endif %}
+
+            <!-- Quick Jump -->
+            <form method="GET" style="display: flex; gap: 6px; align-items: center; margin-left: auto;">
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Go to:</span>
+                <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}" class="form-control"
+                    style="width: 70px; padding: 6px 10px;">
+                <button type="submit" class="btn btn-secondary" style="padding: 6px 12px;">Go</button>
+            </form>
+    </div>
+    {% endif %}
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cancer Type / ICD-10</th>
+                    <th>Year</th>
+                    <th>Gender</th>
+                    <th>Age Group</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in records %}
+                <tr>
+                    <td>{{ row['id'] }}</td>
+                    <td>
+                        <strong
+                            style="max-width: 200px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            title="{{ row['icd10_code'] }}">
+                            {{ row['icd10_code'][:30] }}{% if row['icd10_code']|length > 30 %}...{% endif %}
+                        </strong>
+                        {% if row['is_sarcoma'] %}
+                        <span class="badge badge-sarcoma" style="margin-left: 6px;">Sarcoma</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ row['diagnosis_year'] }}</td>
+                    <td>{{ row['gender'] }}</td>
+                    <td>{{ row['age_group'] }}</td>
+                    <td>
+                        <form method="POST" style="display: inline-flex; gap: 4px; align-items: center;">
+                            <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="id" value="{{ row['id'] }}">
+                            <input type="number" name="count" value="{{ row['count'] }}" class="form-control"
+                                style="width: 90px; padding: 6px 10px;">
+                            <button type="submit" class="btn btn-secondary" style="padding: 6px 10px;">Save</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST" style="display: inline;"
+                            onsubmit="return confirm('Delete record #{{ row['id'] }}?');">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="{{ row['id'] }}">
+                            <button type="submit" class="btn btn-danger" style="padding: 6px 12px;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        No records found. Upload data from the <a href="/import">Import</a> page.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Bottom -->
+    {% if total_pages > 1 %}
+    <div style="display: flex; gap: 8px; align-items: center; margin-top: 16px; flex-wrap: wrap;">
+        {% if page > 1 %}
+        <a href="/crud?page={{ page - 1 }}" class="btn btn-secondary" style="padding: 6px 12px;">Previous</a>
+        {% endif %}
+
+        <span style="color: var(--text-secondary);">
+            Page {{ page }} of {{ total_pages }}
+        </span>
+
+        {% if page < total_pages %} <a href="/crud?page={{ page + 1 }}" class="btn btn-secondary"
+            style="padding: 6px 12px;">Next</a>
+            {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

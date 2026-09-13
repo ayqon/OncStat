@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>OncStat Dashboard</h2>
+    <p>US CDC Cancer Statistics (USCS) Data Insights & Analysis</p>
+</div>
+
+{% if error %}
+<div class="error-box">
+    <strong>Error Loading Data</strong>
+    <p>{{ error }}</p>
+    <p>Please ensure data has been imported via the Import page.</p>
+</div>
+{% elif stats %}
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="stat-card accent">
+        <div>
+            <div class="stat-value">{{ "{:,}".format(stats.total_cases) }}</div>
+            <div class="stat-label">Total Cancer Cases</div>
+        </div>
+        <div class="stat-icon">
+            <img src="{{ url_for('static', filename='icons/manage-records-icon.svg') }}" alt="">
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-value">{{ "{:,}".format(stats.total_records) }}</div>
+            <div class="stat-label">Data Points</div>
+        </div>
+        <div class="stat-icon">
+            <img src="{{ url_for('static', filename='icons/dataset-icon.svg') }}" alt="">
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-value">{{ stats.cancer_types }}</div>
+            <div class="stat-label">Cancer Types</div>
+        </div>
+        <div class="stat-icon">
+            <img src="{{ url_for('static', filename='icons/focus-icon.svg') }}" alt="">
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-value">{{ stats.year_range }}</div>
+            <div class="stat-label">Years Covered</div>
+        </div>
+        <div class="stat-icon">
+            <img src="{{ url_for('static', filename='icons/calendar.svg') }}" alt="">
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Quick Actions</h3>
+    </div>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="/filter" class="btn btn-primary">Filter & Explore Data</a>
+        <a href="/dashboard" class="btn btn-secondary">View Charts</a>
+        <a href="/crud" class="btn btn-secondary">Manage Records</a>
+        <a href="/export" class="btn btn-secondary">Export Data</a>
+    </div>
+</div>
+
+<!-- Data Explanation -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Understanding the Data</h3>
+    </div>
+    <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px;">
+        <strong>Total Cancer Cases:</strong> The actual number of cancer diagnoses recorded (sum of all case counts).
+    </p>
+    <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px;">
+        <strong>Data Points:</strong> Number of unique combinations (year × site × gender × race) in the database.
+    </p>
+    <p style="color: var(--text-secondary); line-height: 1.6;">
+        Data source: <a href="https://www.cdc.gov/cancer/uscs/" target="_blank">US CDC Cancer Statistics (USCS)</a> -
+        comprehensive cancer incidence data from 1999-2022.
+    </p>
+</div>
+{% else %}
+<div class="card">
+    <p>No data loaded yet. Go to <a href="/import">Import Data</a> to get started.</p>
+</div>
+{% endif %}
+{% endblock %}

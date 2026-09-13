@@ -1,0 +1,11 @@
+icd10_code,diagnosisyear,gender,age_at_diagnosis,count
+C49,2023,Male,50-54,125
+C49,2023,Female,50-54,98
+C49,2023,Male,55-59,142
+C40,2023,Male,15-19,23
+C41,2023,Female,20-24,18
+C50,2023,Female,50-54,3500
+C34,2023,Male,65-69,2100
+C18,2023,Male,70-74,1850
+C49,2022,Male,50-54,118
+C49,2022,Female,50-54,95

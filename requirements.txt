@@ -1,0 +1,10 @@
+# Dependencies for Cancer Data Dashboard
+
+flask
+pandas
+matplotlib
+plotly
+requests
+pytest
+openpyxl
+gunicorn

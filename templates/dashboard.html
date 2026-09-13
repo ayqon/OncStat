@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Charts & Visualizations</h2>
+    <p>Interactive analysis of cancer registration trends and distributions</p>
+</div>
+
+{% if stats %}
+<!-- Stats Summary -->
+<div class="stats-grid">
+    <div class="stat-card accent">
+        <div>
+            <div class="stat-value">{{ "{:,}".format(stats.total_cases) }}</div>
+            <div class="stat-label">Total Cases</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-value">{{ stats.cancer_types }}</div>
+            <div class="stat-label">Cancer Types</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-value">{{ stats.year_range }}</div>
+            <div class="stat-label">Years Covered</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-value" style="font-size: 0.9rem;">{{ stats.top_cancer[:30] }}</div>
+            <div class="stat-label">Top Cancer Type</div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Top Cancers Chart -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Top 10 Cancer Types</h3>
+    </div>
+    {% if chart_top_cancers %}
+    <div class="chart-container">
+        {{ chart_top_cancers | safe }}
+    </div>
+    {% else %}
+    <p style="color: var(--text-secondary);">Chart not available</p>
+    {% endif %}
+</div>
+
+<!-- Primary Charts Row -->
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Trend Over Time</h3>
+        </div>
+        {% if chart_trend %}
+        <div class="chart-container">
+            {{ chart_trend | safe }}
+        </div>
+        {% else %}
+        <p style="color: var(--text-secondary);">Chart not available</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Gender Distribution</h3>
+        </div>
+        {% if chart_gender %}
+        <div class="chart-container">
+            {{ chart_gender | safe }}
+        </div>
+        {% else %}
+        <p style="color: var(--text-secondary);">Chart not available</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Year Gender Chart -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Cases by Year and Gender</h3>
+    </div>
+    {% if chart_year_gender %}
+    <div class="chart-container">
+        {{ chart_year_gender | safe }}
+    </div>
+    {% else %}
+    <p style="color: var(--text-secondary);">Chart not available</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Activity Logs</h2>
+    <p>View recent user activity and system events</p>
+</div>
+
+{% if error %}
+<div class="error-box">
+    <strong>Error:</strong> {{ error }}
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">📜 Recent Activity (Last 100 entries)</h3>
+        <span style="color: var(--text-secondary); font-size: 0.85rem;">Log file: logs/app.log</span>
+    </div>
+    <div
+        style="background: #1e293b; border-radius: 8px; padding: 16px; margin-top: 16px; max-height: 600px; overflow-y: auto;">
+        <pre
+            style="color: #94a3b8; font-family: 'Courier New', monospace; font-size: 0.8rem; margin: 0; white-space: pre-wrap;">{% for line in logs %}{{ line }}{% else %}No log entries found.{% endfor %}</pre>
+    </div>
+</div>
+
+<div style="margin-top: 20px;">
+    <a href="/import" class="btn btn-secondary">← Back to Import</a>
+</div>
+{% endblock %}
